@@ -18,7 +18,8 @@ def main():
     test = pd.read_csv(args.test)
 
     featNames = list(train.keys())[-2::-1]
-
+    featNames.reverse()
+    
     train.loc[:, featNames].to_csv('xTrain.csv', index=False)
     test.loc[:, featNames].to_csv('xTest.csv', index=False)
     train.loc[:, 'Cover_Type'].to_csv('yTrain.csv', index=False, header='Cover_Type')
