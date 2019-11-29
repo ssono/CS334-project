@@ -64,12 +64,6 @@ def main():
     xTest = pd.read_csv(args.xTest)
     colNames = list(xTrain.keys())
 
-    # use standard scaler
-    scaler = StandardScaler()
-    scaler.fit(xTrain)
-    xTrain = scaler.transform(xTrain)
-    xTest = scaler.transform(xTest.to_numpy())
-
     visualize(xTrain, yTrain, colNames)
 
     return
