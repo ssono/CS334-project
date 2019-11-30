@@ -94,7 +94,10 @@ def main():
 
     # create an instance of the model
     knn = KNN(args.k)
-    knn = knn.gridSearch(xTrain.to_numpy(), yTrain.to_numpy(), [1, 3, 5, 11, 25, 51])
+
+    # run gridsearch
+    ks = [1, 3, 5, 11, 25, 51]
+    knn = knn.gridSearch(xTrain.to_numpy(), yTrain.to_numpy(), ks)
     print("K: " + str(knn.k))
 
 
