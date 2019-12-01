@@ -5,7 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import KFold
 
 # example invocation for command line
-# python randomForest.py 10 5 gini 5 5 gini xTrain.csv yTrain.csv xTest.csv
+# python randomForest.py 10 5 gini 5 5 xTrain.csv yTrain.csv xTest.csv
 
 class RF(object):
     nest = 1
@@ -38,13 +38,6 @@ class RF(object):
             ct += i == j
         return ct / len(Y)
 
-    
-    nest = 1
-    maxFeatures = 1
-    criterion = 'gini'
-    maxDepth = 1
-    minLeafSamples = 1
-
     def gridSearch(self, X, Y, nest, maxFeatures, criterion, maxDepth, minLeafSamples):
         nfolds = 3
         kf = KFold(nfolds)
@@ -69,9 +62,11 @@ class RF(object):
                                 total += acc / nfolds
                             if total > best:
                                 self.model = testModel.model
-                                self.maxDepth = d                
-                                self.minLeafSamples = l
+                                self.nest = n               
+                                self.maxFeatures = m
                                 self.criterion = c
+                                self.maxDepth = d
+                                self.minLeafSamples = l
                                 best = total
 
         self.train(X,Y)
@@ -120,7 +115,7 @@ def main():
 
     # run gridsearch
     nest = [1, 3, 5, 11, 25, 51]
-    maxFeatures = [1, 3, 5, 9]
+    maxFeatures = [1, 3, 5, 11, 25, 51]
     criterion = ['gini', 'entropy']
     maxDepth = [1, 3, 5, 11, 25, 51]
     minLeafSamples = [1, 3, 5, 11, 25, 51]
