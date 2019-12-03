@@ -11,12 +11,14 @@ from models.knn import KNN
 from models.nb import NB
 from models.randomForest import RF
 from models.svm import SVM
+from collections import Counter
 
 # python finalModel.py xTrain.csv yTrain.csv xTest.csv
 
 def visualize(xTrain, yTrain, colNames):
     # DATA VISUALIZATION
     # start with generic dataframe with everything
+    plt.figure(0)
     alldf = pd.DataFrame(xTrain, columns=colNames)
     alldf['Cover_Type'] = yTrain.to_numpy()
 
@@ -49,6 +51,29 @@ def visualize(xTrain, yTrain, colNames):
 
     plt.title('Continuous feature correlation')
 
+    # frequency bar graph
+    plt.figure(1)
+
+    freq = Counter(list(yTrain['Cover_Type']))
+
+    labelMap = {1: 'Spruce/Fir',
+        2: 'Lodgepole Pine',
+        3: 'Ponderosa Pine',
+        4: 'Cottonwood/Willow',
+        5: 'Aspen', 
+        6: 'Douglas-fir', 
+        7: 'Krummholz'}
+
+    label = [labelMap[k] for k in freq.keys()]
+    no_trees = [freq[k] for k in freq.keys()]
+
+    index = np.arange(len(label))
+    plt.bar(index, no_trees)
+    plt.xlabel('Cover type', fontsize=14)
+    plt.ylabel('Number of samples', fontsize=14)
+    plt.xticks(index, label, fontsize=14, rotation=30)
+    plt.title('Class Frequency in training')
+
     plt.show()
     return
 
@@ -70,6 +95,7 @@ def main():
     yTrain = pd.read_csv(args.yTrain)
     xTest = pd.read_csv(args.xTest)
     colNames = list(xTrain.keys())
+
     # visualize(xTrain, yTrain, colNames)
 
     models = {
@@ -111,11 +137,32 @@ def main():
     print("ACC: ", total)
 
     metalearner.train(X,Y)
-    finalPreds = metalearner.predict(xTest.to_numpy())
-    finalPreds = np.array([list(range(len(xTest))), finalPreds]).transpose()
+    testPreds = metalearner.predict(xTest.to_numpy())
+    finalPreds = np.array([list(range(len(xTest))), testPreds]).transpose()
     finalPreds = pd.DataFrame(finalPreds, columns=['Id', 'Cover_Type'])
     finalPreds.to_csv('finalPredictions.csv', index=False)
-    print(finalPreds)
+    # print(finalPreds)
+
+    freq = Counter(list(testPreds))
+    labelMap = {1: 'Spruce/Fir',
+        2: 'Lodgepole Pine',
+        3: 'Ponderosa Pine',
+        4: 'Cottonwood/Willow',
+        5: 'Aspen', 
+        6: 'Douglas-fir', 
+        7: 'Krummholz'}
+
+    label = [labelMap[k] for k in freq.keys()]
+    no_trees = [freq[k] for k in freq.keys()]
+
+    index = np.arange(len(label))
+    plt.bar(index, no_trees)
+    plt.xlabel('Cover type', fontsize=12)
+    plt.ylabel('Number of samples', fontsize=12)
+    plt.xticks(index, label, fontsize=12, rotation=30)
+    plt.title('Class Frequency in prediction')
+    plt.show()
+
     return
 
 
