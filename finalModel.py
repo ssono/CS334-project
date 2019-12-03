@@ -4,6 +4,13 @@ import argparse
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import KFold
+from models.boosting import Boost
+from models.dt import DT
+from models.knn import KNN
+from models.nb import NB
+from models.randomForest import RF
+from models.svm import SVM
 
 # python finalModel.py xTrain.csv yTrain.csv xTest.csv
 
@@ -63,9 +70,52 @@ def main():
     yTrain = pd.read_csv(args.yTrain)
     xTest = pd.read_csv(args.xTest)
     colNames = list(xTrain.keys())
+    # visualize(xTrain, yTrain, colNames)
 
-    visualize(xTrain, yTrain, colNames)
+    models = {
+        'boost': Boost(5, .2, 5),
+        'dt': DT(25, 1, 'entropy'),
+        'knn': KNN(1),
+        'nb': NB(),
+        'rf': RF(51, 25, 'gini', 25, 1),
+        'svm': SVM(.1, 'poly', 3, .01)
+    }
 
+    X = xTrain.to_numpy()
+    Y = yTrain.to_numpy()
+
+    basePreds = []
+    for k in models:
+        models[k].train(X, Y)
+        basePreds.append(list(models[k].predict(xTrain.to_numpy())))
+    basePreds = np.array(basePreds)
+    basePreds = np.transpose(basePreds)
+
+    metalearner = Boost(5, .2, 5)
+
+    nfolds = 3
+    kf = KFold(nfolds)
+    trIndices = []
+    tsIndices = []
+    for tr, ts in kf.split(X):
+        trIndices.append(tr)
+        tsIndices.append(ts)
+
+    total = 0
+    
+    for i in range(nfolds):
+        metalearner.train(X[trIndices[i], :], Y[trIndices[i], :])
+        acc = metalearner.predAcc(X[tsIndices[i], :], Y[tsIndices[i], :])
+        total += acc / nfolds
+
+    print("ACC: ", total)
+
+    metalearner.train(X,Y)
+    finalPreds = metalearner.predict(xTest.to_numpy())
+    finalPreds = np.array([list(range(len(xTest))), finalPreds]).transpose()
+    finalPreds = pd.DataFrame(finalPreds, columns=['Id', 'Cover_Type'])
+    finalPreds.to_csv('finalPredictions.csv', index=False)
+    print(finalPreds)
     return
 
 

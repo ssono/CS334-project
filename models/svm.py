@@ -8,7 +8,7 @@ from sklearn.model_selection import KFold
 # python svm.py 1 poly 3 0.01 xTrain.csv yTrain.csv xTest.csv
 
 class SVM(object):
-    c = 0
+    c = 0.1
     kernel = 'poly'
     degree = 3
     gamma = 0.01
@@ -123,6 +123,12 @@ def main():
 
     svm = SVM(args.C, args.kernel, args.degree, args.gamma)
     svm = svm.gridSearch(xTrain.to_numpy(), yTrain.to_numpy(), cs, kernels, degrees, gammas)
+
+    print("SVM")
+    print("cs: " + svm.c)
+    print("cs: " + svm.kernel)
+    print("cs: " + svm.degree)
+    print("cs: " + svm.gamma)
 
 
 if __name__ == "__main__":

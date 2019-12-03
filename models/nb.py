@@ -60,6 +60,7 @@ def main():
 
     # create an instance of the model
     nb = NB()
+    print("NB")
 
 
 

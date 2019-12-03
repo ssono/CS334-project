@@ -5,7 +5,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.model_selection import KFold
 
 # example invocation for command line
-# python knn.py 5 xTrain.csv yTrain.csv xTest.csv
+# python dt.py 5 5 gini xTrain.csv yTrain.csv xTest.csv
 
 class DT(object):
     maxDepth = 1
@@ -103,9 +103,10 @@ def main():
 
     # run gridsearch
     mds = [1, 3, 5, 11, 25, 51]
-    mls = [1, 3, 5, 11, 25, 51]
+    mls = [1, 5, 25, 51, 201]
     criterion = ['gini', 'entropy']
     dt= dt.gridSearch(xTrain.to_numpy(), yTrain.to_numpy(), mds, mls, criterion)
+    print("Decision Tree")
     print("Max Depth: " + str(dt.maxDepth))
     print("Min Leaf Samples: " + str(dt.minLeafSamples))
     print("Splitting Criterion: " + str(dt.criterion))

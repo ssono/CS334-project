@@ -54,6 +54,7 @@ class KNN(object):
             if total > best:
                 self.model = testModel.model
                 self.k = k
+                
                 best = total
 
         self.train(X,Y)
@@ -96,7 +97,7 @@ def main():
     knn = KNN(args.k)
 
     # run gridsearch
-    ks = [1, 3, 5, 11, 25, 51]
+    ks = [1, 5, 25, 101, 501, 1001]
     knn = knn.gridSearch(xTrain.to_numpy(), yTrain.to_numpy(), ks)
     print("K: " + str(knn.k))
 
