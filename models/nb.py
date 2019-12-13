@@ -2,6 +2,7 @@ import argparse
 import numpy as np
 import pandas as pd
 from sklearn.naive_bayes import GaussianNB
+from sklearn.model_selection import KFold
 
 # example invocation for command line
 # python nb.py xTrain.csv yTrain.csv xTest.csv
@@ -30,12 +31,6 @@ class NB(object):
         return ct / len(Y)
 
 
-
-
-    
-
-
-
 def main():
     """
     Main file to run from the command line.
@@ -59,10 +54,26 @@ def main():
     xTest = pd.read_csv("../"+args.xTest)
 
     # create an instance of the model
+
+    X = xTrain.to_numpy()
+    Y = yTrain.to_numpy()
+
     nb = NB()
-    print("NB")
 
+    nfolds = 3
+    kf = KFold(nfolds)
+    trIndices = []
+    tsIndices = []
+    for tr, ts in kf.split(X):
+        trIndices.append(tr)
+        tsIndices.append(ts)
 
+    total = 0
+    for i in range(nfolds):
+        nb.train(X[trIndices[i], :], Y[trIndices[i], :])
+        acc = nb.predAcc(X[tsIndices[i], :], Y[tsIndices[i], :])
+        total += acc / nfolds
+    print(total)
 
 if __name__ == "__main__":
     main()
